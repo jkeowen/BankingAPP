@@ -38,12 +38,13 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var client = require('./client');
 var createUser = require('./users').createUser;
+var _a = require('./transactions'), deposit = _a.deposit, withdraw = _a.withdraw, getTransactionsByUserId = _a.getTransactionsByUserId;
 var dropTables = function () { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 console.log('DROPPING TABLES');
-                return [4 /*yield*/, client.query("\n  DROP TABLE IF EXISTS transactions;\n  DROP TABLE IF EXISTS users;\n  ")];
+                return [4 /*yield*/, client.query("\n  DROP TABLE IF EXISTS balances;\n  DROP TABLE IF EXISTS transactions;\n  DROP TABLE IF EXISTS users;\n  ")];
             case 1:
                 _a.sent();
                 console.log('FINISHED DROPPING TABLES');
@@ -56,7 +57,7 @@ var buildTables = function () { return __awaiter(void 0, void 0, void 0, functio
         switch (_a.label) {
             case 0:
                 console.log('CREATING TABLES');
-                return [4 /*yield*/, client.query("\n    CREATE TABLE users(id SERIAL PRIMARY KEY,\n                       first_name VARCHAR(15) NOT NULL,\n                       last_name VARCHAR(15) NOT NULL,\n                       email_address VARCHAR(15) NOT NULL,\n                       password VARCHAR(100) NOT NULL,\n                       pin INTEGER NOT NULL,\n                       account_number INTEGER);\n    CREATE TABLE transactions(id SERIAL PRIMARY KEY,\n                              user_id INTEGER REFERENCES users(id) NOT NULL,\n                              type BOOLEAN NOT NULL);\n  ")];
+                return [4 /*yield*/, client.query("\n    CREATE TABLE users(id SERIAL PRIMARY KEY,\n                       first_name VARCHAR(15) NOT NULL,\n                       last_name VARCHAR(15) NOT NULL,\n                       email_address VARCHAR(15) NOT NULL,\n                       password VARCHAR(100) NOT NULL,\n                       pin INTEGER NOT NULL,\n                       account_number INTEGER);\n    CREATE TABLE transactions(id SERIAL PRIMARY KEY,\n                              user_id INTEGER REFERENCES users(id) NOT NULL,\n                              type VARCHAR(10) NOT NULL,\n                              amount INTEGER NOT NULL);\n    CREATE TABLE balances(id SERIAL PRIMARY KEY,\n                          user_id INTEGER REFERENCES users(id) NOT NULL UNIQUE,\n                          amount INTEGER NOT NULL);\n  ")];
             case 1:
                 _a.sent();
                 console.log('FINISHED CREATING TABLES');
@@ -92,6 +93,15 @@ var seedDb = function () { return __awaiter(void 0, void 0, void 0, function () 
                 _a.sent();
                 return [4 /*yield*/, createUsers()];
             case 3:
+                _a.sent();
+                return [4 /*yield*/, deposit(1, 5)];
+            case 4:
+                _a.sent();
+                return [4 /*yield*/, withdraw(1, 5)];
+            case 5:
+                _a.sent();
+                return [4 /*yield*/, getTransactionsByUserId(1)];
+            case 6:
                 _a.sent();
                 client.end();
                 console.log("DISCONNECTED FROM DB");

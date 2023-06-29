@@ -37,76 +37,71 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var client = require('./client');
-var createNewBalance = require('./balances').createNewBalance;
-var createUser = function (firstName, lastName, emailAddress, password, pin) { return __awaiter(void 0, void 0, void 0, function () {
-    var _user, accountNumberSeed, user, accountNumber, balance, err_1;
+var getUserById = require('./users').getUserById;
+var deposit = function (userId, amount) { return __awaiter(void 0, void 0, void 0, function () {
+    var _user, deposit_1, err_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                _a.trys.push([0, 5, , 6]);
-                return [4 /*yield*/, getUserByEmail(emailAddress)];
+                _a.trys.push([0, 3, , 4]);
+                return [4 /*yield*/, getUserById(userId)];
             case 1:
                 _user = _a.sent();
-                if (_user)
-                    return [2 /*return*/, "USER ALREADY EXISTS"];
-                accountNumberSeed = 11111111;
-                return [4 /*yield*/, client.query("\n      INSERT INTO users(first_name, last_name, email_address, password, pin)\n      VALUES($1, $2, $3, $4, $5)\n      RETURNING *;\n    ", [firstName, lastName, emailAddress, password, pin])];
+                if (!_user) {
+                    console.log("USER DOES NOT EXIST");
+                    return [2 /*return*/, "USER DOES NOT EXIST"];
+                }
+                return [4 /*yield*/, client.query("\n      INSERT INTO transactions(user_id, type, amount)\n      VALUES($1, 'deposit', $2)\n      RETURNING *;\n    ", [userId, amount])];
             case 2:
-                user = (_a.sent()).rows[0];
-                return [4 /*yield*/, client.query("\n      UPDATE users\n      SET account_number = ".concat(accountNumberSeed + user.id, "\n      WHERE id = ").concat(user.id, "\n      RETURNING account_number;\n    "))];
+                deposit_1 = (_a.sent()).rows.deposit;
+                return [2 /*return*/, deposit_1];
             case 3:
-                accountNumber = (_a.sent()).rows[0];
-                return [4 /*yield*/, createNewBalance(user.id)];
-            case 4:
-                balance = _a.sent();
-                delete user.password;
-                user.balance = balance.amount;
-                user.account_number = accountNumber.account_number;
-                console.log(user);
-                return [2 /*return*/, user];
-            case 5:
                 err_1 = _a.sent();
                 throw err_1;
-            case 6: return [2 /*return*/];
+            case 4: return [2 /*return*/];
         }
     });
 }); };
-var getUserById = function (userId) { return __awaiter(void 0, void 0, void 0, function () {
-    var user, err_2;
+var withdraw = function (userId, amount) { return __awaiter(void 0, void 0, void 0, function () {
+    var _user, withdraw_1, err_2;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                _a.trys.push([0, 2, , 3]);
-                return [4 /*yield*/, client.query("\n      SELECT * \n      FROM users\n      WHERE id = $1;\n    ", [userId])];
+                _a.trys.push([0, 3, , 4]);
+                return [4 /*yield*/, getUserById(userId)];
             case 1:
-                user = (_a.sent()).rows[0];
-                return [2 /*return*/, user];
+                _user = _a.sent();
+                if (!_user)
+                    return [2 /*return*/, 'USER DOES NOT EXIST'];
+                return [4 /*yield*/, client.query("\n      INSERT INTO transactions(user_id, type, amount)\n      VALUES($1, 'withdraw', $2)\n      RETURNING *;\n    ", [userId, amount])];
             case 2:
+                withdraw_1 = (_a.sent()).rows[0];
+                return [2 /*return*/, withdraw_1];
+            case 3:
                 err_2 = _a.sent();
                 throw err_2;
-            case 3: return [2 /*return*/];
+            case 4: return [2 /*return*/];
         }
     });
 }); };
-var getUserByEmail = function (emailAddress) { return __awaiter(void 0, void 0, void 0, function () {
-    var user, err_3;
+var getTransactionsByUserId = function (userId) { return __awaiter(void 0, void 0, void 0, function () {
+    var _user, transactions;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0:
-                _a.trys.push([0, 2, , 3]);
-                return [4 /*yield*/, client.query("\n      SELECT * \n      FROM users\n      WHERE email_address = $1;\n    ", [emailAddress])];
+            case 0: return [4 /*yield*/, getUserById(userId)];
             case 1:
-                user = (_a.sent()).rows[0];
-                return [2 /*return*/, user];
+                _user = _a.sent();
+                if (!_user)
+                    return [2 /*return*/];
+                return [4 /*yield*/, client.query("\n    SELECT id, type, amount \n    FROM transactions\n    WHERE user_id = $1;\n  ", [userId])];
             case 2:
-                err_3 = _a.sent();
-                throw err_3;
-            case 3: return [2 /*return*/];
+                transactions = (_a.sent()).rows;
+                return [2 /*return*/, transactions];
         }
     });
 }); };
 module.exports = {
-    createUser: createUser,
-    getUserById: getUserById,
-    getUserByEmail: getUserByEmail
+    deposit: deposit,
+    withdraw: withdraw,
+    getTransactionsByUserId: getTransactionsByUserId
 };

@@ -1,10 +1,12 @@
 const client = require('./client');
 const { createUser } = require('./users');
+const { deposit, withdraw, getTransactionsByUserId } = require('./transactions');
 
 
 const dropTables = async() =>{
   console.log('DROPPING TABLES');
   await client.query(`
+  DROP TABLE IF EXISTS balances;
   DROP TABLE IF EXISTS transactions;
   DROP TABLE IF EXISTS users;
   `)
@@ -23,7 +25,11 @@ const buildTables = async() =>{
                        account_number INTEGER);
     CREATE TABLE transactions(id SERIAL PRIMARY KEY,
                               user_id INTEGER REFERENCES users(id) NOT NULL,
-                              type BOOLEAN NOT NULL);
+                              type VARCHAR(10) NOT NULL,
+                              amount INTEGER NOT NULL);
+    CREATE TABLE balances(id SERIAL PRIMARY KEY,
+                          user_id INTEGER REFERENCES users(id) NOT NULL UNIQUE,
+                          amount INTEGER NOT NULL);
   `);
   console.log('FINISHED CREATING TABLES');
 };
@@ -41,6 +47,9 @@ const seedDb = async() =>{
   await dropTables();
   await buildTables();
   await createUsers();
+  await deposit(1, 500);
+  await withdraw(1, 500);
+  await getTransactionsByUserId(1);
   client.end();
   console.log("DISCONNECTED FROM DB");
 }
