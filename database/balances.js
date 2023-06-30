@@ -54,6 +54,61 @@ var createNewBalance = function (userId) { return __awaiter(void 0, void 0, void
         }
     });
 }); };
+var reduceBalance = function (userId, amount) { return __awaiter(void 0, void 0, void 0, function () {
+    var balance, err_2;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                _a.trys.push([0, 2, , 3]);
+                return [4 /*yield*/, client.query("\n      UPDATE balances\n      SET amount = amount - $2\n      WHERE user_id = $1\n      RETURNING *;\n    ", [userId, amount])];
+            case 1:
+                balance = (_a.sent()).rows[0];
+                return [2 /*return*/, balance];
+            case 2:
+                err_2 = _a.sent();
+                throw err_2;
+            case 3: return [2 /*return*/];
+        }
+    });
+}); };
+var addToBalance = function (userId, amount) { return __awaiter(void 0, void 0, void 0, function () {
+    var balance, err_3;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                _a.trys.push([0, 2, , 3]);
+                return [4 /*yield*/, client.query("\n      UPDATE balances\n      SET amount = amount + $2\n      WHERE user_id = $1\n      RETURNING *;\n    ", [userId, amount])];
+            case 1:
+                balance = (_a.sent()).rows[0];
+                return [2 /*return*/, balance];
+            case 2:
+                err_3 = _a.sent();
+                throw err_3;
+            case 3: return [2 /*return*/];
+        }
+    });
+}); };
+var getCurrentBalance = function (userId) { return __awaiter(void 0, void 0, void 0, function () {
+    var balance, err_4;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                _a.trys.push([0, 2, , 3]);
+                return [4 /*yield*/, client.query("\n      SELECT amount \n      FROM balances\n      WHERE user_id = $1; \n    ", [userId])];
+            case 1:
+                balance = (_a.sent()).rows[0];
+                console.log(balance);
+                return [2 /*return*/, balance];
+            case 2:
+                err_4 = _a.sent();
+                throw err_4;
+            case 3: return [2 /*return*/];
+        }
+    });
+}); };
 module.exports = {
-    createNewBalance: createNewBalance
+    createNewBalance: createNewBalance,
+    reduceBalance: reduceBalance,
+    addToBalance: addToBalance,
+    getCurrentBalance: getCurrentBalance
 };

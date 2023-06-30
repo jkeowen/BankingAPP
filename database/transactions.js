@@ -38,12 +38,13 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var client = require('./client');
 var getUserById = require('./users').getUserById;
+var _a = require('./balances'), reduceBalance = _a.reduceBalance, addToBalance = _a.addToBalance;
 var deposit = function (userId, amount) { return __awaiter(void 0, void 0, void 0, function () {
-    var _user, deposit_1, err_1;
+    var _user, deposit_1, newBalance, err_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                _a.trys.push([0, 3, , 4]);
+                _a.trys.push([0, 4, , 5]);
                 return [4 /*yield*/, getUserById(userId)];
             case 1:
                 _user = _a.sent();
@@ -53,21 +54,25 @@ var deposit = function (userId, amount) { return __awaiter(void 0, void 0, void 
                 }
                 return [4 /*yield*/, client.query("\n      INSERT INTO transactions(user_id, type, amount)\n      VALUES($1, 'deposit', $2)\n      RETURNING *;\n    ", [userId, amount])];
             case 2:
-                deposit_1 = (_a.sent()).rows.deposit;
-                return [2 /*return*/, deposit_1];
+                deposit_1 = (_a.sent()).rows[0];
+                return [4 /*yield*/, addToBalance(userId, amount)];
             case 3:
+                newBalance = _a.sent();
+                deposit_1.balance = newBalance.amount;
+                return [2 /*return*/, deposit_1];
+            case 4:
                 err_1 = _a.sent();
                 throw err_1;
-            case 4: return [2 /*return*/];
+            case 5: return [2 /*return*/];
         }
     });
 }); };
 var withdraw = function (userId, amount) { return __awaiter(void 0, void 0, void 0, function () {
-    var _user, withdraw_1, err_2;
+    var _user, withdraw_1, newBalance, err_2;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                _a.trys.push([0, 3, , 4]);
+                _a.trys.push([0, 4, , 5]);
                 return [4 /*yield*/, getUserById(userId)];
             case 1:
                 _user = _a.sent();
@@ -76,11 +81,15 @@ var withdraw = function (userId, amount) { return __awaiter(void 0, void 0, void
                 return [4 /*yield*/, client.query("\n      INSERT INTO transactions(user_id, type, amount)\n      VALUES($1, 'withdraw', $2)\n      RETURNING *;\n    ", [userId, amount])];
             case 2:
                 withdraw_1 = (_a.sent()).rows[0];
-                return [2 /*return*/, withdraw_1];
+                return [4 /*yield*/, reduceBalance(userId, amount)];
             case 3:
+                newBalance = _a.sent();
+                withdraw_1.balance = newBalance.amount;
+                return [2 /*return*/, withdraw_1];
+            case 4:
                 err_2 = _a.sent();
                 throw err_2;
-            case 4: return [2 /*return*/];
+            case 5: return [2 /*return*/];
         }
     });
 }); };

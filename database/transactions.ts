@@ -1,5 +1,6 @@
 const client = require('./client');
 const { getUserById } = require('./users');
+const { reduceBalance, addToBalance } = require('./balances');
 
 const deposit = async(userId: number, amount: number) =>{
   try{
@@ -8,11 +9,13 @@ const deposit = async(userId: number, amount: number) =>{
       console.log("USER DOES NOT EXIST")
       return "USER DOES NOT EXIST";
     } 
-    const { rows : {deposit} } = await client.query(`
+    const { rows : [deposit] } = await client.query(`
       INSERT INTO transactions(user_id, type, amount)
       VALUES($1, 'deposit', $2)
       RETURNING *;
     `,[userId, amount]);
+    const newBalance = await addToBalance(userId, amount);
+    deposit.balance = newBalance.amount;
     return deposit;
   }
   catch(err){
@@ -28,7 +31,9 @@ const withdraw = async(userId: number, amount: number) =>{
       INSERT INTO transactions(user_id, type, amount)
       VALUES($1, 'withdraw', $2)
       RETURNING *;
-    `, [userId, amount])
+    `, [userId, amount]);
+    const newBalance = await reduceBalance(userId, amount);
+    withdraw.balance = newBalance.amount;
     return withdraw;
   }
   catch(err){
@@ -43,7 +48,7 @@ const getTransactionsByUserId = async(userId: number) =>{
     SELECT id, type, amount 
     FROM transactions
     WHERE user_id = $1;
-  `, [userId])
+  `, [userId]);
   return transactions;
 }
 

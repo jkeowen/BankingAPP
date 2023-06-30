@@ -39,6 +39,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var client = require('./client');
 var createUser = require('./users').createUser;
 var _a = require('./transactions'), deposit = _a.deposit, withdraw = _a.withdraw, getTransactionsByUserId = _a.getTransactionsByUserId;
+var getCurrentBalance = require('./balances').getCurrentBalance;
 var dropTables = function () { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -94,14 +95,17 @@ var seedDb = function () { return __awaiter(void 0, void 0, void 0, function () 
                 return [4 /*yield*/, createUsers()];
             case 3:
                 _a.sent();
-                return [4 /*yield*/, deposit(1, 5)];
+                return [4 /*yield*/, deposit(1, 500)];
             case 4:
                 _a.sent();
-                return [4 /*yield*/, withdraw(1, 5)];
+                return [4 /*yield*/, withdraw(1, 250)];
             case 5:
                 _a.sent();
                 return [4 /*yield*/, getTransactionsByUserId(1)];
             case 6:
+                _a.sent();
+                return [4 /*yield*/, getCurrentBalance(1)];
+            case 7:
                 _a.sent();
                 client.end();
                 console.log("DISCONNECTED FROM DB");

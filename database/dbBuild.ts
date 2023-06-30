@@ -1,7 +1,7 @@
 const client = require('./client');
 const { createUser } = require('./users');
 const { deposit, withdraw, getTransactionsByUserId } = require('./transactions');
-
+const { getCurrentBalance } = require('./balances');
 
 const dropTables = async() =>{
   console.log('DROPPING TABLES');
@@ -48,8 +48,10 @@ const seedDb = async() =>{
   await buildTables();
   await createUsers();
   await deposit(1, 500);
-  await withdraw(1, 500);
+  await withdraw(1, 250);
   await getTransactionsByUserId(1);
+  await getCurrentBalance(1);
+  
   client.end();
   console.log("DISCONNECTED FROM DB");
 }

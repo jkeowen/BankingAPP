@@ -62,7 +62,6 @@ var createUser = function (firstName, lastName, emailAddress, password, pin) { r
                 delete user.password;
                 user.balance = balance.amount;
                 user.account_number = accountNumber.account_number;
-                console.log(user);
                 return [2 /*return*/, user];
             case 5:
                 err_1 = _a.sent();

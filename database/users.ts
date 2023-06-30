@@ -21,7 +21,6 @@ const createUser = async(firstName: string, lastName: string, emailAddress: stri
     delete user.password
     user.balance = balance.amount;
     user.account_number =  accountNumber.account_number
-    console.log(user);
     return user;
   }
   catch(err){
